@@ -13,7 +13,7 @@ public class Responder{
     {
         _config = config;
         _engine = engine;
- 
+
         var path = Directory.GetCurrentDirectory()+@"\\SystemPrompt.txt";
         using (StreamReader reader = new StreamReader(path))  
         {  

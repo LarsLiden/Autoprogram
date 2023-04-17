@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.RegularExpressions;
 
 public class CodeToString {
     private string ProjectDirectory { get; set; }  
