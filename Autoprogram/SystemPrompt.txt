@@ -1,0 +1,8 @@
+Fix the following error 
+
+Exception has occurred: CLR/System.IndexOutOfRangeException
+An exception of type 'System.IndexOutOfRangeException' occurred in Autoprogram.dll but was not handled in user code: 'Index was outside the bounds of the array.'
+   at StringToCode.GetFiles(String input) in c:\codebox\Autoprogram\Autoprogram\StringToCode.cs:line 15
+   at Autoprogram.Tests.CodeToStringTests.StringToCode_ReturnsCorrectFiles() in c:\codebox\Autoprogram\AutoprogramTests\CodeToStringTests.cs:line 51
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)

@@ -18,12 +18,9 @@ namespace Autoprogram
             var codeToString = new CodeToString(projectDirectory);
             var output = codeToString.GetSourceFiles();
             Console.WriteLine(output);
-/*
-            var prompt = "Tell me about your mother";
-            var response = await client.GetResponse(prompt);
-            Console.WriteLine($"Chatbot: {response}");
-            */
 
+            var response = await client.GetResponse(output);
+            Console.WriteLine($"Chatbot: {response}");
         }  
     }
 }
