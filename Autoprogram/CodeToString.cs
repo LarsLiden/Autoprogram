@@ -32,24 +32,4 @@ public class CodeToString {
         }  
         return sourceFilesWithPathAndCode.ToString();  
     }  
-
-    static Dictionary<string, string> StringToCode(string input)
-    {
-        Dictionary<string, string> files = new Dictionary<string, string>();
-        string pattern = @"(==========\n)(.*\n)(==========\n)";
-        string[] lines = Regex.Split(input, pattern);
-
-        for (int i = 1; i < lines.Length; i += 3)
-        {
-            string fileName = lines[i].Trim();
-            string fileContent = lines[i + 2].Trim();
-
-            if (!files.ContainsKey(fileName))
-            {
-                files.Add(fileName, fileContent);
-            }
-        }
-
-        return files;
-    }
 }
