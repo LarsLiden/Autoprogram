@@ -1,6 +1,3 @@
-using System.Text;
-using System.Text.RegularExpressions;
-
 public class StringToCode {
 
     public static Dictionary<string, string> GetFiles(string text)
@@ -36,4 +33,21 @@ public class StringToCode {
 
         return fileContents;
     }  
+
+    public static void SaveFilesToDisk(Dictionary<string, string> files)
+    {
+        foreach (var file in files)
+        {
+            string filePath = file.Key;
+            string fileContent = file.Value;
+
+            string directoryPath = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            File.WriteAllText(filePath, fileContent);
+        }
+    }
 }

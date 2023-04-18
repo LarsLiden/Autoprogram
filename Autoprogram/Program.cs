@@ -18,10 +18,21 @@ namespace Autoprogram
             projectDirectory = System.IO.Directory.GetParent(projectDirectory).FullName;
             var codeToString = new CodeToString(projectDirectory);
             var output = codeToString.GetSourceFiles();
-            Console.WriteLine(output);
 
+            var path = Directory.GetCurrentDirectory()+@"\\CurrentTask.txt";
+            using (StreamReader reader = new StreamReader(path))  
+            {  
+                var task = reader.ReadToEnd(); 
+                output = $"{task}\n{output}";
+            }  
+
+            Console.WriteLine(output);
+                
             var response = await client.GetResponse(output);
             Console.WriteLine($"Chatbot: {response}");
-        }  
+
+            var files = StringToCode.GetFiles(output);
+            StringToCode.SaveFilesToDisk(files);
+        }
     }
 }

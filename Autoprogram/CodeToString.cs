@@ -10,7 +10,7 @@ public class CodeToString {
         SourceFilesList = new List<string>();  
     }
 
-    public string GetSourceFiles(List<string> extensions = null)  
+    public string GetSourceFiles(List<string>? extensions = null)  
     {  
         if (extensions == null)  
         {  
