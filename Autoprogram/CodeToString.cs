@@ -12,7 +12,7 @@ public class CodeToString {
 
     public string GetSourceFiles(List<string> extensions = null)  
     {  
-            if (extensions == null)  
+        if (extensions == null)  
         {  
             extensions = new List<string> { ".cs", ".java", ".c", ".cpp", ".js", ".html", ".css" };  
         }  
@@ -21,11 +21,9 @@ public class CodeToString {
         {  
             if (!filePath.Contains("Debug") && !filePath.Contains("debug") &&  
                 extensions.Any(extension => filePath.EndsWith(extension, StringComparison.OrdinalIgnoreCase)))  
-            {  
-                sourceFilesWithPathAndCode.AppendLine("==========");  
-                sourceFilesWithPathAndCode.AppendLine(filePath);  
-                sourceFilesWithPathAndCode.AppendLine("==========");   
-                sourceFilesWithPathAndCode.AppendLine(File.ReadAllText(filePath));  
+            {    
+                sourceFilesWithPathAndCode.AppendLine($"[File]\n{filePath}");  
+                sourceFilesWithPathAndCode.AppendLine($"[Code]\n{File.ReadAllText(filePath)}");  
                 sourceFilesWithPathAndCode.AppendLine();  
             }  
         }  

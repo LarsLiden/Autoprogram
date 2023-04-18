@@ -51,9 +51,10 @@ namespace Autoprogram.Tests
         {
             string content1 = $"System.WriteLine(\"Hello World\");";
             string content2 = $"System.out.println(\"Hello Earth\");\nSystem.out.println(\"Take Me To Your Leader\");\n";
+            
             // Arrange
-            string input = $"==========\n{TestDirectory}\\test.cs\n==========\n{content1}\n" +
-                           $"==========\n{TestDirectory}\\test.java\n==========\n{content2}\n";
+            string input = $"[File]\n{TestDirectory}\\test.cs\n[Code]\n{content1}\n" + 
+            $"[File]\n{TestDirectory}\\test.java\n[Code]\n{content2}\n";
 
             // Act
             Dictionary<string, string> result = StringToCode.GetFiles(input);
