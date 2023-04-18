@@ -15,6 +15,7 @@ namespace Autoprogram
             var client = new Responder(configuration, "GrindstoneGPT4-32k");
 
             var projectDirectory = Directory.GetCurrentDirectory();
+            projectDirectory = System.IO.Directory.GetParent(projectDirectory).FullName;
             var codeToString = new CodeToString(projectDirectory);
             var output = codeToString.GetSourceFiles();
             Console.WriteLine(output);
