@@ -1,1 +1,26 @@
-Add a function to StringToCode that takes the output of GetFiles and saves the files to disk
+StringToCode_ReturnsCorrectFiles_WithBlankLines unit test is failing because it doesn't handle blank lines correctly.  please ensure that it works for all blank lines. 
+
+Here are three examples of things it needs to handle things like:
+
+Example 1:
+[File]
+{the path to the file}
+
+[Code]
+{the contents of the file}
+
+Example 2:
+
+[File]
+{the path to the file}
+[Code]
+{the contents of the file}
+
+Example 3:
+[File]
+
+{the path to the file}
+
+[Code]
+
+{the contents of the file}

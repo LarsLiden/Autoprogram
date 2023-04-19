@@ -8,14 +8,18 @@ public class StringToCode {
 
         while (currentIndex < lines.Length)
         {
+            currentIndex = NextNonBlankIndex(lines, currentIndex);
+
             if (lines[currentIndex].StartsWith("[File]"))
             {
-                currentIndex++;
-                string currentFile = lines[currentIndex];
-                currentIndex++;
+                currentIndex = NextNonBlankIndex(lines, currentIndex+1);
+
+                string currentFile = lines[currentIndex].Trim();
+                currentIndex = NextNonBlankIndex(lines, currentIndex+1);
+
                 if (currentIndex < lines.Length && lines[currentIndex].StartsWith("[Code]"))
                 {
-                    currentIndex++;
+                    currentIndex = NextNonBlankIndex(lines, currentIndex+1);
                     string currentContent = "";
                     while (currentIndex < lines.Length && !lines[currentIndex].StartsWith("[File]"))
                     {
@@ -34,6 +38,16 @@ public class StringToCode {
         return fileContents;
     }  
 
+    public static int NextNonBlankIndex(string[] lines, int currentIndex) {
+        while (string.IsNullOrWhiteSpace(lines[currentIndex]))
+        {
+            currentIndex++;
+            if (currentIndex == lines.Length) {
+                return -1;
+            }
+        }
+        return currentIndex;
+    }
     public static void SaveFilesToDisk(Dictionary<string, string> files)
     {
         foreach (var file in files)

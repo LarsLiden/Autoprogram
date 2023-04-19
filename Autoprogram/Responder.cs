@@ -28,8 +28,6 @@ public class Responder{
 
         OpenAIClient client = new OpenAIClient(new Uri(endpoint), new AzureKeyCredential(key));
 
-        Console.Write($"Input: {prompt}\n");
-
         Response<ChatCompletions> responseWithoutStream = await client.GetChatCompletionsAsync(
             _engine,
             new ChatCompletionsOptions()

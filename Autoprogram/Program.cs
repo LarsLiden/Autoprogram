@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace Autoprogram
 {
@@ -17,21 +17,21 @@ namespace Autoprogram
             var projectDirectory = Directory.GetCurrentDirectory();
             projectDirectory = System.IO.Directory.GetParent(projectDirectory).FullName;
             var codeToString = new CodeToString(projectDirectory);
-            var output = codeToString.GetSourceFiles();
+            var source = codeToString.GetSourceFiles();
 
             var path = Directory.GetCurrentDirectory()+@"\\CurrentTask.txt";
+            string curTask = "";
             using (StreamReader reader = new StreamReader(path))  
             {  
-                var task = reader.ReadToEnd(); 
-                output = $"{task}\n{output}";
+                curTask = reader.ReadToEnd(); 
             }  
-
-            Console.WriteLine(output);
                 
-            var response = await client.GetResponse(output);
-            Console.WriteLine($"Chatbot: {response}");
+            var prompt = $"{curTask}\n{source}";
+            Console.WriteLine($"Prompt:\n{prompt}");
+            var response = await client.GetResponse(prompt);
+            Console.WriteLine($"Response:\n{response}");
 
-            var files = StringToCode.GetFiles(output);
+            var files = StringToCode.GetFiles(response);
             StringToCode.SaveFilesToDisk(files);
         }
     }
