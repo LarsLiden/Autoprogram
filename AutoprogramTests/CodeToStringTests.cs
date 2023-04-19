@@ -67,5 +67,26 @@ namespace Autoprogram.Tests
             Assert.Equal(RemoveLF(content1), RemoveLF(result[$"{TestDirectory}\\test.cs"]));
             Assert.Equal(RemoveLF(content2), RemoveLF(result[$"{TestDirectory}\\test.java"]));
         }
+
+        [Fact]
+        public void StringToCode_ReturnsCorrectFiles_WithBlankLines()
+        {
+            string content1 = $"System.WriteLine(\"Hello World\");";
+            string content2 = $"System.out.println(\"Hello Earth\");\nSystem.out.println(\"Take Me To Your Leader\");\n";
+            
+            // Arrange
+            string input = $"\n\n[File]\n{TestDirectory}\\test.cs\n\n[Code]\n{content1}\n\n" + 
+            $"[File]\n{TestDirectory}\\test.java\n\n[Code]\n{content2}\n\n";
+
+            // Act
+            Dictionary<string, string> result = StringToCode.GetFiles(input);
+
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.True(result.ContainsKey($"{TestDirectory}\\test.cs"));
+            Assert.True(result.ContainsKey($"{TestDirectory}\\test.java"));
+            Assert.Equal(RemoveLF(content1), RemoveLF(result[$"{TestDirectory}\\test.cs"]));
+            Assert.Equal(RemoveLF(content2), RemoveLF(result[$"{TestDirectory}\\test.java"]));
+        }
     }
 }
