@@ -33,6 +33,17 @@ namespace Autoprogram
 
             var files = StringToCode.GetFiles(response);
             StringToCode.SaveFilesToDisk(files);
+
+            // Initialize CommandLineUtilities with your Github token and create a pull request
+            var githubToken = configuration["GithubToken"];
+            var commandLineUtilities = new CommandLineUtilities(githubToken);
+
+            // Create a new branch
+            string branchName = "new-feature-branch";
+            await commandLineUtilities.CreateBranch("repositoryOwner", "repositoryName", branchName);
+
+            // Create a pull request for the new branch
+            await commandLineUtilities.CreatePullRequest("repositoryOwner", "repositoryName", branchName, "baseBranch");
         }
     }
 }
