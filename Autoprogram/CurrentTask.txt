@@ -1,1 +1,1 @@
-The code should generate a new branch for the pull request
+Getfilediffs returns file diffs.  Patch the diffs before saving the files to disk

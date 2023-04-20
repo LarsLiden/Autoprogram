@@ -12,7 +12,7 @@ namespace Autoprogram.Tests
         }
 
         [Fact]
-        public void GetSourceFiles_ReturnsCorrectFiles()
+        public void GetSourceFilesDictionary_ReturnsCorrectFiles()
         {
             // Arrange
             Directory.CreateDirectory(TestDirectory);
@@ -29,21 +29,15 @@ namespace Autoprogram.Tests
             var codeToString = new CodeToString(TestDirectory);
 
             // Act
-            string result = codeToString.GetSourceFiles();
+            var result = codeToString.GetSourceFilesDictionary();
 
             // Assert
-            Assert.Contains(csFile, result);
-            Assert.Contains(javaFile, result);
-            Assert.DoesNotContain(txtFile, result);
+            Assert.Contains(csFile, result.Keys);
+            Assert.Contains(javaFile, result.Keys);
+            Assert.DoesNotContain(txtFile, result.Keys);
 
             // Cleanup
             Directory.Delete(TestDirectory, true);
-        }
-
-        public static string RemoveLF(string input)
-        {
-            string output = input.Replace("\n", "").Replace("\r", "");
-            return output;
         }
 
         [Fact]
@@ -57,15 +51,15 @@ namespace Autoprogram.Tests
             $"[File]\n{TestDirectory}\\test.java\n[Code]\n{content2}\n";
 
             // Act
-            Dictionary<string, string> result = StringToCode.GetFiles(input);
+            Dictionary<string, string> result = StringToCode.GetFilesDiffs(input);
 
             char[] trim = new char[] { '\n', '\r'};
             // Assert
             Assert.Equal(2, result.Count);
             Assert.True(result.ContainsKey($"{TestDirectory}\\test.cs"));
             Assert.True(result.ContainsKey($"{TestDirectory}\\test.java"));
-            Assert.Equal(RemoveLF(content1), RemoveLF(result[$"{TestDirectory}\\test.cs"]));
-            Assert.Equal(RemoveLF(content2), RemoveLF(result[$"{TestDirectory}\\test.java"]));
+            Assert.Equal(TestUtil.RemoveLF(content1), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.cs"]));
+            Assert.Equal(TestUtil.RemoveLF(content2), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.java"]));
         }
 
         [Fact]
@@ -79,14 +73,49 @@ namespace Autoprogram.Tests
             $"[File]\n{TestDirectory}\\test.java\n\n[Code]\n{content2}\n\n";
 
             // Act
-            Dictionary<string, string> result = StringToCode.GetFiles(input);
+            Dictionary<string, string> result = StringToCode.GetFilesDiffs(input);
 
             // Assert
             Assert.Equal(2, result.Count);
             Assert.True(result.ContainsKey($"{TestDirectory}\\test.cs"));
             Assert.True(result.ContainsKey($"{TestDirectory}\\test.java"));
-            Assert.Equal(RemoveLF(content1), RemoveLF(result[$"{TestDirectory}\\test.cs"]));
-            Assert.Equal(RemoveLF(content2), RemoveLF(result[$"{TestDirectory}\\test.java"]));
+            Assert.Equal(TestUtil.RemoveLF(content1), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.cs"]));
+            Assert.Equal(TestUtil.RemoveLF(content2), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.java"]));
+        }
+
+        [Fact]
+        public void ApplyPatchesToFiles_ReturnsCorrectUpdatedFiles()
+        {
+            // Arrange
+            var originalFiles = new Dictionary<string, string>
+            {
+                { "file1.cs", "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, world!\");\n    }\n}\n" },
+                { "file2.cs", "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, world!\");\n    }\n}\n" }
+            };
+
+            var patches = new Dictionary<string, string>
+            {
+                { "file1.cs", "@@ -1,5 +1,5 @@\n public class HelloWorld {\n     public static void main(String[] args) {\n-        System.out.println(\"Hello, world!\");\n+        System.out.println(\"Hello, Earth!\");\n     }\n }\n" }
+            };
+
+            var expectedUpdatedFiles = new Dictionary<string, string>
+            {
+                { "file1.cs", "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, Earth!\");\n    }\n}\n" },
+                { "file2.cs", "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, world!\");\n    }\n}\n" }
+            };
+
+            var codeToString = new CodeToString("");
+
+            // Act
+            var updatedFiles = codeToString.ApplyPatchesToFiles(originalFiles, patches);
+
+            // Assert
+            foreach (var file in expectedUpdatedFiles)
+            {
+                Assert.True(updatedFiles.ContainsKey(file.Key));
+                Assert.Equal(TestUtil.RemoveLF(file.Value), TestUtil.RemoveLF(updatedFiles[file.Key]));
+            }
+
         }
     }
 }
