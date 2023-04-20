@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 
 namespace Autoprogram
@@ -17,7 +18,8 @@ namespace Autoprogram
             var projectDirectory = Directory.GetCurrentDirectory();
             projectDirectory = System.IO.Directory.GetParent(projectDirectory).FullName;
             var codeToString = new CodeToString(projectDirectory);
-            var source = codeToString.GetSourceFiles();
+            var sourceFilesDictionary = codeToString.GetSourceFilesDictionary();
+            var source = codeToString.DictionaryToString(sourceFilesDictionary);
 
             var path = Directory.GetCurrentDirectory()+@"\\CurrentTask.txt";
             string curTask = "";
@@ -31,9 +33,13 @@ namespace Autoprogram
             var response = await client.GetResponse(prompt);
             Console.WriteLine($"Response:\n{response}");
 
-            var files = StringToCode.GetFiles(response);
-            StringToCode.SaveFilesToDisk(files);
+            var diffs = StringToCode.GetFilesDiffs(response);
+            var files = codeToString.ApplyPatchesToFiles(sourceFilesDictionary, diffs);
+            StringToCode.SaveFilesToDisk(diffs);
 
+            // Compile the project
+            CompileProject(projectDirectory);
+/*
             // Initialize CommandLineUtilities with your Github token and create a pull request
             var githubToken = configuration["GithubToken"];
             var commandLineUtilities = new CommandLineUtilities(githubToken);
@@ -44,6 +50,40 @@ namespace Autoprogram
 
             // Create a pull request for the new branch
             await commandLineUtilities.CreatePullRequest("repositoryOwner", "repositoryName", branchName, "baseBranch");
+*/
+        }
+
+        private static void CompileProject(string projectDirectory)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "dotnet",
+                    Arguments = "build",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WorkingDirectory = projectDirectory
+                }
+            };
+
+            process.Start();
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+            process.WaitForExit();
+
+            if (process.ExitCode == 0)
+            {
+                Console.WriteLine("Project compiled successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Project compilation failed.");
+                Console.WriteLine($"Output: {output}");
+                Console.WriteLine($"Error: {error}");
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 public class StringToCode {
 
-    public static Dictionary<string, string> GetFiles(string text)
+    public static Dictionary<string, string> GetFilesDiffs(string text)
     {
         Dictionary<string, string> fileContents = new Dictionary<string, string>();
         string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
