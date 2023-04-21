@@ -45,7 +45,8 @@ public class Responder{
             });
 
         ChatCompletions completions = responseWithoutStream.Value;
-
-        return completions.Choices[0].Message.Content;
+        var content = completions.Choices[0].Message.Content;
+        content = Utils.CleanString(content);
+        return content;
     }
 }

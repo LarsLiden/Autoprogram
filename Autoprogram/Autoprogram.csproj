@@ -15,4 +15,9 @@
     <PackageReference Include="Octokit" Version="5.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+      <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+        <_Parameter1>AutoprogramTests</_Parameter1>
+      </AssemblyAttribute>
+  </ItemGroup>
 </Project>

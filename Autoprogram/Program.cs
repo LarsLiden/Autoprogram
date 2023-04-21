@@ -34,8 +34,8 @@ namespace Autoprogram
             Console.WriteLine($"Response:\n{response}");
 
             var diffs = StringToCode.GetFilesDiffs(response);
-            var files = codeToString.ApplyPatchesToFiles(sourceFilesDictionary, diffs);
-            StringToCode.SaveFilesToDisk(diffs);
+            var files = codeToString.ApplyDiffsToFiles(sourceFilesDictionary, diffs);
+         //TEMP   StringToCode.SaveFilesToDisk(files);
 
             // Compile the project
             CompileProject(projectDirectory);

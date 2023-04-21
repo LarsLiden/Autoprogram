@@ -51,15 +51,16 @@ namespace Autoprogram.Tests
             $"[File]\n{TestDirectory}\\test.java\n[Code]\n{content2}\n";
 
             // Act
-            Dictionary<string, string> result = StringToCode.GetFilesDiffs(input);
+            Dictionary<string, List<string>> result = StringToCode.GetFilesDiffs(input);
+
 
             char[] trim = new char[] { '\n', '\r'};
             // Assert
             Assert.Equal(2, result.Count);
             Assert.True(result.ContainsKey($"{TestDirectory}\\test.cs"));
             Assert.True(result.ContainsKey($"{TestDirectory}\\test.java"));
-            Assert.Equal(TestUtil.RemoveLF(content1), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.cs"]));
-            Assert.Equal(TestUtil.RemoveLF(content2), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.java"]));
+            Assert.Equal(TestUtil.RemoveLF(content1), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.cs"].FirstOrDefault()));
+            Assert.Equal(TestUtil.RemoveLF(content2), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.java"].FirstOrDefault()));
         }
 
         [Fact]
@@ -73,14 +74,14 @@ namespace Autoprogram.Tests
             $"[File]\n{TestDirectory}\\test.java\n\n[Code]\n{content2}\n\n";
 
             // Act
-            Dictionary<string, string> result = StringToCode.GetFilesDiffs(input);
+            Dictionary<string, List<string>> result = StringToCode.GetFilesDiffs(input);
 
             // Assert
             Assert.Equal(2, result.Count);
             Assert.True(result.ContainsKey($"{TestDirectory}\\test.cs"));
             Assert.True(result.ContainsKey($"{TestDirectory}\\test.java"));
-            Assert.Equal(TestUtil.RemoveLF(content1), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.cs"]));
-            Assert.Equal(TestUtil.RemoveLF(content2), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.java"]));
+            Assert.Equal(TestUtil.RemoveLF(content1), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.cs"].FirstOrDefault()));
+            Assert.Equal(TestUtil.RemoveLF(content2), TestUtil.RemoveLF(result[$"{TestDirectory}\\test.java"].FirstOrDefault()));
         }
 
         [Fact]
@@ -93,27 +94,27 @@ namespace Autoprogram.Tests
                 { "file2.cs", "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, world!\");\n    }\n}\n" }
             };
 
-            var patches = new Dictionary<string, string>
+            var patches = new Dictionary<string, List<string>>
             {
-                { "file1.cs", "@@ -1,5 +1,5 @@\n public class HelloWorld {\n     public static void main(String[] args) {\n-        System.out.println(\"Hello, world!\");\n+        System.out.println(\"Hello, Earth!\");\n     }\n }\n" }
+                { "file1.cs", new List<string> {"@@ -1,5 +1,5 @@\n public class HelloWorld {\n     public static void main(String[] args) {\n-       System.out.println(\"Hello, world!\");\n+       System.out.println(\"Hello, Earth!\");\n     }\n }\n"}}
             };
 
-            var expectedUpdatedFiles = new Dictionary<string, string>
+            var expectedUpdatedFiles = new Dictionary<string, List<string>>
             {
-                { "file1.cs", "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, Earth!\");\n    }\n}\n" },
-                { "file2.cs", "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, world!\");\n    }\n}\n" }
+                { "file1.cs", new List<string> {"public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, Earth!\");\n    }\n}\n" }},
+                { "file2.cs", new List<string> {"public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, world!\");\n    }\n}\n" }}
             };
 
             var codeToString = new CodeToString("");
 
             // Act
-            var updatedFiles = codeToString.ApplyPatchesToFiles(originalFiles, patches);
+            var updatedFiles = codeToString.ApplyDiffsToFiles(originalFiles, patches);
 
             // Assert
             foreach (var file in expectedUpdatedFiles)
             {
                 Assert.True(updatedFiles.ContainsKey(file.Key));
-                Assert.Equal(TestUtil.RemoveLF(file.Value), TestUtil.RemoveLF(updatedFiles[file.Key]));
+                Assert.Equal(TestUtil.RemoveLF(file.Value.FirstOrDefault()), TestUtil.RemoveLF(updatedFiles[file.Key]));
             }
 
         }

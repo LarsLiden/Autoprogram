@@ -7,5 +7,5 @@ First include a "[Comment]" section in which you describe your changes.  Then fo
 {the path to the file}
 
 [Code]
-{the contents of the file}
+{Present the output in git diff format with line numbers}
 

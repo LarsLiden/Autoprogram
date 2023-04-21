@@ -1,32 +1,36 @@
 public class StringToCode {
 
-    public static Dictionary<string, string> GetFilesDiffs(string text)
+    public static Dictionary<string, List<string>> GetFilesDiffs(string text)
     {
-        Dictionary<string, string> fileContents = new Dictionary<string, string>();
-        string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+        Dictionary<string, List<string>> fileContents = new Dictionary<string, List<string>>();
+        string[] lines = text.Split("\n");
         int currentIndex = 0;
 
         while (currentIndex < lines.Length)
         {
-            currentIndex = NextNonBlankIndex(lines, currentIndex);
+            currentIndex = Utils.NextNonBlankIndex(lines, currentIndex);
 
             if (lines[currentIndex].StartsWith("[File]"))
             {
-                currentIndex = NextNonBlankIndex(lines, currentIndex+1);
+                currentIndex = Utils.NextNonBlankIndex(lines, currentIndex+1);
 
                 string currentFile = lines[currentIndex].Trim();
-                currentIndex = NextNonBlankIndex(lines, currentIndex+1);
+                currentIndex = Utils.NextNonBlankIndex(lines, currentIndex+1);
 
                 if (currentIndex < lines.Length && lines[currentIndex].StartsWith("[Code]"))
                 {
-                    currentIndex = NextNonBlankIndex(lines, currentIndex+1);
+                    currentIndex = Utils.NextNonBlankIndex(lines, currentIndex+1);
                     string currentContent = "";
                     while (currentIndex < lines.Length && !lines[currentIndex].StartsWith("[File]"))
                     {
-                        currentContent += lines[currentIndex] + Environment.NewLine;
+                        currentContent += lines[currentIndex] + "\n";
                         currentIndex++;
                     }
-                    fileContents.Add(currentFile, currentContent.Trim());
+                    if (!fileContents.TryGetValue(currentFile, out List<string> diffs)) {
+                        diffs = new List<string>();
+                        fileContents.Add(currentFile, diffs);
+                    }
+                    diffs.Add(currentContent.Trim());
                 }
             }
             else
@@ -38,16 +42,6 @@ public class StringToCode {
         return fileContents;
     }  
 
-    public static int NextNonBlankIndex(string[] lines, int currentIndex) {
-        while (string.IsNullOrWhiteSpace(lines[currentIndex]))
-        {
-            currentIndex++;
-            if (currentIndex == lines.Length) {
-                return -1;
-            }
-        }
-        return currentIndex;
-    }
     public static void SaveFilesToDisk(Dictionary<string, string> files)
     {
         foreach (var file in files)

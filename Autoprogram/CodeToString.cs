@@ -21,8 +21,10 @@ public class CodeToString {
         {
             if (!filePath.Contains("Debug") && !filePath.Contains("debug") &&
                 extensions.Any(extension => filePath.EndsWith(extension, StringComparison.OrdinalIgnoreCase)))
-            {
-                sourceFilesWithPathAndCode.Add(filePath, File.ReadAllText(filePath));
+            { 
+                var fileText = File.ReadAllText(filePath);
+                fileText = Utils.CleanString(fileText);
+                sourceFilesWithPathAndCode.Add(filePath, fileText);
             }
         }
         return sourceFilesWithPathAndCode;
@@ -40,21 +42,17 @@ public class CodeToString {
         return sourceFilesWithPathAndCode.ToString();
     }
 
-    public Dictionary<string, string> ApplyPatchesToFiles(Dictionary<string, string> originalFiles, Dictionary<string, string> patches)
+    public Dictionary<string, string> ApplyDiffsToFiles(Dictionary<string, string> originalFiles, Dictionary<string, List<string>> patches)
     {
-        var updatedFiles = new Dictionary<string, string>();
+        //var updatedFiles = new Dictionary<string, string>();
         foreach (var file in originalFiles)
         {
             if (patches.ContainsKey(file.Key))
             {
-                string updatedCode = PatchUtility.ApplyPatch(file.Value, patches[file.Key]);
-                updatedFiles.Add(file.Key, updatedCode);
-            }
-            else
-            {
-                updatedFiles.Add(file.Key, file.Value);
+                string updatedCode = PatchUtility.ApplyDiffs(file.Value, patches[file.Key]);
+                originalFiles[file.Key] = updatedCode;
             }
         }
-        return updatedFiles;
+        return originalFiles;
     }
 }
