@@ -50,7 +50,12 @@ public static class PatchUtility
         for (int i = 0; i < patch.patchLines.Count(); i++)  {
             var curPatchLine = patch.patchLines[i];
             if (curPatchLine.type == PatchType.ADD) {
-                codeLines.Insert(curFileLine, curPatchLine.text);
+                if (curFileLine < codeLines.Count()) {
+                    codeLines.Insert(curFileLine, curPatchLine.text);
+                }
+                else {
+                    codeLines.Add(curPatchLine.text);
+                }
                 curFileLine++;
             }
             else if (curPatchLine.type == PatchType.DELETE) {
@@ -121,7 +126,7 @@ public static class PatchUtility
                     while (index < lines.Length && !lines[index].StartsWith("@@"))
                     {
                         var currentContent = lines[index];
-                        PatchLine? patchLine;
+                        PatchLine? patchLine = null;
                         if (currentContent.StartsWith("+")) {
                             currentContent = currentContent.Replace("+", " ");
                             patchLine = new PatchLine(currentContent, PatchType.ADD);
@@ -130,10 +135,13 @@ public static class PatchUtility
                             currentContent = currentContent.Replace("-", " ");
                             patchLine = new PatchLine(currentContent, PatchType.DELETE);
                         }
-                        else {
+                        // If not a comment keep
+                        else if (currentContent.StartsWith("\\")) {
                             patchLine = new PatchLine(currentContent, PatchType.KEEP);
                         }
-                        patch.Add(patchLine);
+                        if (patchLine != null) {
+                            patch.Add(patchLine);
+                        }
                         index++;
                     }
                     patches.Add(patch);
