@@ -1,1 +1,12 @@
-Getfilediffs returns file diffs.  Patch the diffs before saving the files to disk
+Each time the program is run it should update a text file called History.txt that contain the current task and just the contents between [comment] and [File] sections of the contents returned in GetResponse 
+
+The GetResponse returned data looks like:
+
+[Comment]
+{comment}
+
+[File]
+{file path}
+
+[Code]
+{code}
