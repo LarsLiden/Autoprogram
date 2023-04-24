@@ -7,6 +7,6 @@ First include a "[COMMENT]" section in which you describe your changes.  Then fo
 {the path to the file}
 
 [START CODE]
-{Present the output in git diff format with line numbers}
+{Present the output in unified diff format}
 [END CODE]
 

@@ -11,9 +11,13 @@ class Utils {
         return input.Replace("\r\n", "\n");
     }
 
-    // GPT4 has habit of occasionally injects commentary with starting with ``` unrelated to the code
-    public static int NextNonBlankIndex(string[] lines, int currentIndex, bool removeGPTComments = false) {
-        while (string.IsNullOrWhiteSpace(lines[currentIndex]) || (removeGPTComments && lines[currentIndex].StartsWith("```")))
+    // GPT4 has habit of occasionally:
+    // 1) Injects commentary with starting with ``` unrelated to the code
+    // 2) Putting {no changes} for code that has no changes
+    public static int NextNonBlankIndex(string[] lines, int currentIndex) {
+        while (string.IsNullOrWhiteSpace(lines[currentIndex]) 
+        || string.Equals(lines[currentIndex], "{no changes}", StringComparison.CurrentCultureIgnoreCase)
+        || lines[currentIndex].StartsWith("```"))
         {
             currentIndex++;
             if (currentIndex == lines.Length) {

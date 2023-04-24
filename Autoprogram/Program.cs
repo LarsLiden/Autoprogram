@@ -1,8 +1,5 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
-             // Update the history file
-             HistoryUpdater.UpdateHistoryFile("history.txt", curTask, response);
- 
 
 namespace Autoprogram
 {
@@ -32,15 +29,25 @@ namespace Autoprogram
             }  
                 
             var prompt = $"{curTask}\n{source}";
-            Console.WriteLine($"Prompt:\n{prompt}");
+            
             var response = await client.GetResponse(prompt);
-             Console.WriteLine($"Current Task:\n{curTask}\n\n[COMMENT]:\n{HistoryUpdater.ExtractCommentSection(response)}");
+            Console.WriteLine($"Current Task:\n{curTask}\n\n[COMMENT]:\n{HistoryUpdater.ExtractCommentSection(response)}");
 
-            var diffs = StringToCode.GetFilesDiffs(response);
-            var files = codeToString.ApplyDiffsToFiles(sourceFilesDictionary, diffs);
+            Console.WriteLine($"Changed:\n{response}");
+
+            var fileDiffDict = StringToCode.GetFilesDiffs(response);
+            var files = codeToString.ApplyDiffsToFiles(sourceFilesDictionary, fileDiffDict);
+
+            if (files.Count() == 0) {
+                Console.ForegroundColor=ConsoleColor.Red;
+                Console.WriteLine("No files to updated.");
+                return;
+            }
             StringToCode.SaveFilesToDisk(files);
 
-            // Compile the project
+             // Update the history file
+            HistoryUpdater.UpdateHistoryFile("history.txt", curTask, response);
+
             CompileProject(projectDirectory);
 /*
             // Initialize CommandLineUtilities with your Github token and create a pull request
@@ -63,19 +70,19 @@ namespace Autoprogram
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = "build",
+                    Arguments = "build /property:WarningLevel=0",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
-                    WorkingDirectory = projectDirectory
+                    WorkingDirectory = projectDirectory + "//Autoprogram"
                 }
             };
 
             process.Start();
             string output = process.StandardOutput.ReadToEnd();
             string error = process.StandardError.ReadToEnd();
-            process.WaitForExit();
+            process.WaitForExit(10000); // Wait for 60 seconds
 
             if (process.ExitCode == 0)
             {
