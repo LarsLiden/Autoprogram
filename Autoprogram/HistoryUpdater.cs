@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text.RegularExpressions;
 
 public class HistoryUpdater
@@ -11,7 +10,7 @@ public class HistoryUpdater
         File.AppendAllText(historyFilePath, historyEntry);
     }
 
-    private static string ExtractCommentSection(string response)
+    public static string ExtractCommentSection(string response)
     {
         var match = Regex.Match(response, @"\[COMMENT\](.*?)\[FILE NAME\]", RegexOptions.Singleline);
         return match.Success ? match.Groups[1].Value.Trim() : "";

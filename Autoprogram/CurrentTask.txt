@@ -1,18 +1,3 @@
-
-
-
-
-
-Each time the program is run it should update a text file called History.txt that contains the current task and just the contents between [COMMENT] and [FILE NAME] sections of the contents returned in GetResponse.  Create a unit test for this functionality
-
-The GetResponse returned data looks like:
-
-[COMMENT]
-{comment}
-
-[FILE NAME]
-{file path}
-
-[START CODE]
-{code}
-[END CODE]
+Make the following changes
+1) Save the comment history after saving the files to disk
+2) Instead of printing out the entire response to the console, only print the current task and the returned [COMMENT]
