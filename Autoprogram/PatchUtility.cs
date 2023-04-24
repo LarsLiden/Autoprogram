@@ -136,7 +136,7 @@ public static class PatchUtility
                             patchLine = new PatchLine(currentContent, PatchType.DELETE);
                         }
                         // If not a comment keep
-                        else if (currentContent.StartsWith("\\")) {
+                        else if (!currentContent.StartsWith("\\")) {
                             patchLine = new PatchLine(currentContent, PatchType.KEEP);
                         }
                         if (patchLine != null) {

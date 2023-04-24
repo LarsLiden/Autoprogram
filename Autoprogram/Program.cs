@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
+             // Update the history file
+             HistoryUpdater.UpdateHistoryFile("history.txt", curTask, response);
+ 
 
 namespace Autoprogram
 {
@@ -31,7 +34,7 @@ namespace Autoprogram
             var prompt = $"{curTask}\n{source}";
             Console.WriteLine($"Prompt:\n{prompt}");
             var response = await client.GetResponse(prompt);
-            Console.WriteLine($"Response:\n{response}");
+             Console.WriteLine($"Current Task:\n{curTask}\n\n[COMMENT]:\n{HistoryUpdater.ExtractCommentSection(response)}");
 
             var diffs = StringToCode.GetFilesDiffs(response);
             var files = codeToString.ApplyDiffsToFiles(sourceFilesDictionary, diffs);
