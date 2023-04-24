@@ -10,18 +10,18 @@ public class StringToCode {
         {
             currentIndex = Utils.NextNonBlankIndex(lines, currentIndex);
 
-            if (lines[currentIndex].StartsWith("[File]"))
+            if (lines[currentIndex].StartsWith(Utils.FILE_NAME))
             {
                 currentIndex = Utils.NextNonBlankIndex(lines, currentIndex+1);
 
                 string currentFile = lines[currentIndex].Trim();
                 currentIndex = Utils.NextNonBlankIndex(lines, currentIndex+1);
 
-                if (currentIndex < lines.Length && lines[currentIndex].StartsWith("[Code]"))
+                if (currentIndex < lines.Length && lines[currentIndex].StartsWith(Utils.START_CODE))
                 {
                     currentIndex = Utils.NextNonBlankIndex(lines, currentIndex+1);
                     string currentContent = "";
-                    while (currentIndex < lines.Length && !lines[currentIndex].StartsWith("[File]"))
+                    while (currentIndex < lines.Length && !lines[currentIndex].StartsWith(Utils.END_CODE))
                     {
                         currentContent += lines[currentIndex] + "\n";
                         currentIndex++;

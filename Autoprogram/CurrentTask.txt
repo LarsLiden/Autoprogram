@@ -3,15 +3,16 @@
 
 
 
-Each time the program is run it should update a text file called History.txt that contains the current task and just the contents between [comment] and [File] sections of the contents returned in GetResponse.  Create a unit test for this functionality
+Each time the program is run it should update a text file called History.txt that contains the current task and just the contents between [COMMENT] and [FILE NAME] sections of the contents returned in GetResponse.  Create a unit test for this functionality
 
 The GetResponse returned data looks like:
 
-[Comment]
+[COMMENT]
 {comment}
 
-[File]
+[FILE NAME]
 {file path}
 
-[Code]
+[START CODE]
 {code}
+[END CODE]

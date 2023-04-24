@@ -35,7 +35,7 @@ namespace Autoprogram
 
             var diffs = StringToCode.GetFilesDiffs(response);
             var files = codeToString.ApplyDiffsToFiles(sourceFilesDictionary, diffs);
-         //TEMP   StringToCode.SaveFilesToDisk(files);
+            StringToCode.SaveFilesToDisk(files);
 
             // Compile the project
             CompileProject(projectDirectory);
