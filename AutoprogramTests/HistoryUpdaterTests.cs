@@ -14,6 +14,7 @@ namespace Autoprogram.Tests
             string response = "[COMMENT]\nThis is a comment.\n\n[FILE NAME]\nC:\\test\\file.cs\n[START CODE]\nSome code changes\n[END CODE]";
 
             string expectedContent = "Current Task: Fix a bug\nThis is a comment.\n\n";
+             string expectedContent = "[TASK]\nCurrent Task: Fix a bug\n[COMMENT]\nThis is a comment.\n\n";
 
             // Act
             HistoryUpdater.UpdateHistoryFile(historyFilePath, currentTask, response);

@@ -1,3 +1,1 @@
-Make the following changes
-1) Save the comment history after saving the files to disk
-2) Instead of printing out the entire response to the console, only print the current task and the returned [COMMENT]
+When updating history.txt file the task description and comment should be proceeded by [TASK] and [COMMENT] headers

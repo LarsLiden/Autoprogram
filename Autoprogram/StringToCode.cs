@@ -2,7 +2,7 @@ public class StringToCode {
 
     public static Dictionary<string, List<string>> GetFilesDiffs(string text)
     {
-        Dictionary<string, List<string>> fileContents = new Dictionary<string, List<string>>();
+        Dictionary<string, List<string>> fileDiffDict = new Dictionary<string, List<string>>();
         string[] lines = text.Split("\n");
         int currentIndex = 0;
 
@@ -20,17 +20,24 @@ public class StringToCode {
                 if (currentIndex < lines.Length && lines[currentIndex].StartsWith(Utils.START_CODE))
                 {
                     currentIndex = Utils.NextNonBlankIndex(lines, currentIndex+1);
-                    string currentContent = "";
+                    string? currentContent = null;
                     while (currentIndex < lines.Length && !lines[currentIndex].StartsWith(Utils.END_CODE))
                     {
-                        currentContent += lines[currentIndex] + "\n";
+                        if (currentContent == null) {
+                            currentContent = lines[currentIndex] + "\n";
+                        }
+                        else {
+                            currentContent += lines[currentIndex] + "\n";
+                        }
                         currentIndex++;
                     }
-                    if (!fileContents.TryGetValue(currentFile, out List<string> diffs)) {
-                        diffs = new List<string>();
-                        fileContents.Add(currentFile, diffs);
+                    if (currentContent != null) {
+                        if (!fileDiffDict.TryGetValue(currentFile, out List<string> diffs)) {
+                            diffs = new List<string>();
+                            fileDiffDict.Add(currentFile, diffs);
+                        }
+                        diffs.Add(currentContent.Trim());
                     }
-                    diffs.Add(currentContent.Trim());
                 }
             }
             else
@@ -39,7 +46,7 @@ public class StringToCode {
             }
         }
 
-        return fileContents;
+        return fileDiffDict;
     }  
 
     public static void SaveFilesToDisk(Dictionary<string, string> files)
@@ -48,12 +55,18 @@ public class StringToCode {
         {
             string filePath = file.Key;
             string fileContent = file.Value;
+             string existingContent = File.Exists(filePath) ? File.ReadAllText(filePath) : null;
 
             string directoryPath = Path.GetDirectoryName(filePath);
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
             }
+ 
+             if (existingContent == null || !fileContent.Equals(existingContent))
+             {
+                 File.WriteAllText(filePath, fileContent);
+             }
 
             File.WriteAllText(filePath, fileContent);
         }

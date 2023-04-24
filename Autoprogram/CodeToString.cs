@@ -42,35 +42,37 @@ public class CodeToString {
         return sourceFilesWithPathAndCode.ToString();
     }
 
-    public Dictionary<string, string> ApplyDiffsToFiles(Dictionary<string, string> originalFiles, Dictionary<string, List<string>> patches)
+    public Dictionary<string, string> ApplyDiffsToFiles(Dictionary<string, string> originalFiles, Dictionary<string, List<string>> fileDiffDict)
     {
+        var updatedFiles = new Dictionary<string, string>();
+
         // Patch files
         foreach (var file in originalFiles)
         {
-            if (patches.ContainsKey(file.Key))
+            if (fileDiffDict.ContainsKey(file.Key))
             {
-                string updatedCode = PatchUtility.ApplyDiffs(file.Value, patches[file.Key]);
-                originalFiles[file.Key] = updatedCode;
+                string updatedCode = PatchUtility.ApplyDiffs(file.Value, fileDiffDict[file.Key]);
+                updatedFiles[file.Key] = updatedCode;
             }
         }
 
         // Add any new files
-        foreach (var patch in patches) 
+        foreach (var item in fileDiffDict) 
         {
-            if (!originalFiles.ContainsKey(patch.Key)) {
-                var patchValue =  patch.Value.Single();
+            if (!originalFiles.ContainsKey(item.Key)) {
+                var diffValue =  item.Value.Single();
 
                 // Sometimes new files are given as a patch, othertimes as just files
                 string newFile;
-                if (patchValue.StartsWith("@@")) {
-                    newFile = PatchUtility.ApplyDiffs("", patch.Value);
+                if (diffValue.StartsWith("@@")) {
+                    newFile = PatchUtility.ApplyDiffs("", item.Value);
                 }
                 else {
-                    newFile = patchValue;
+                    newFile = diffValue;
                 }
-                originalFiles.Add(patch.Key, newFile);
+                updatedFiles.Add(item.Key, newFile);
             }
         }
-        return originalFiles;
+        return updatedFiles;
     }
 }
