@@ -38,7 +38,7 @@ public static class PatchUtility
     private static string ApplyPatches(string fileName, string originalCode, List<Patch> patches) {
         var codeLines = originalCode.Split("\n").ToList();
         foreach (var patch in patches) {
-            (codeLines, bool success) = ApplyPatchToLines(codeLines, patch);
+            (codeLines, bool success) = ApplyPatchToLines(fileName, codeLines, patch);
             if (!success) {
                 Utils.ColorfulWriteLine($"Failed to patch {fileName}", ConsoleColor.Red);
                 return originalCode;
@@ -48,7 +48,7 @@ public static class PatchUtility
         return newCode;
     }
 
-    public static (List<string>, bool) ApplyPatchToLines(List<string>codeLines, Patch patch) {
+    public static (List<string>, bool) ApplyPatchToLines(string fileName, List<string>codeLines, Patch patch) {
         var curFileLine = FindFirstLine(codeLines, patch);
 
         if (curFileLine == -1) {
@@ -67,7 +67,8 @@ public static class PatchUtility
             }
             else if (curPatchLine.type == PatchType.DELETE) {
                 if (curPatchLine.text.Trim() != codeLines[curFileLine].Trim()) {
-                    throw new Exception("Mismatch!");
+                    Utils.ColorfulWriteLine($"Line Mismatch {fileName}", ConsoleColor.Red);
+                    return  (null, false);
                 }
                 codeLines.RemoveAt(curFileLine);
             }

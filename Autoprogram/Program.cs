@@ -46,6 +46,7 @@ namespace Autoprogram
                 var response = await client.GetResponse(prompt);
                 
                 Utils.ColorfulWriteLine($"Changed:", ConsoleColor.Cyan);
+                Utils.ColorfulWriteLine(response, ConsoleColor.Blue);
 
                 if (!Utils.UserWantsToContinue("Looks good?")) {
                     return;

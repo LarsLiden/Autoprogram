@@ -1,0 +1,3 @@
+Fix the following compile error:
+C:\codebox\Autoprogram\TempWorkingProject\AutoprogramTests\PatchUtilityTests.cs(34,47): error CS7036: There is no argument given that corresponds to the required parameter 'diffs' of 'PatchUtility.ApplyDiffs(string, string, List<string>)' [C:\codebox\Autoprogram\TempWorkingProject\AutoprogramTests\AutoprogramTests.csproj]
+C:\codebox\Autoprogram\TempWorkingProject\AutoprogramTests\PatchUtilityTests.cs(60,45): error CS1503: Argument 2: cannot convert from '(System.Collections.Generic.List<string>, bool)' to 'System.Collections.Generic.IEnumerable<string>' [C:\codebox\Autoprogram\TempWorkingProject\AutoprogramTests\AutoprogramTests.csproj]
