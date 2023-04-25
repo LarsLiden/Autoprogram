@@ -10,7 +10,7 @@ public class StringToCode {
         {
             currentIndex = Utils.NextNonBlankIndex(lines, currentIndex);
 
-            if (lines[currentIndex].StartsWith(Utils.FILE_NAME))
+            if (currentIndex < lines.Length && lines[currentIndex].StartsWith(Utils.FILE_NAME))
             {
                 currentIndex = Utils.NextNonBlankIndex(lines, currentIndex+1);
 

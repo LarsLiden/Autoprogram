@@ -52,7 +52,7 @@ public class CodeToString {
         {
             if (fileDiffDict.ContainsKey(file.Key))
             {
-                string updatedCode = PatchUtility.ApplyDiffs(file.Value, fileDiffDict[file.Key]);
+                string updatedCode = PatchUtility.ApplyDiffs(file.Key, file.Value, fileDiffDict[file.Key]);
                 updatedFiles[file.Key] = updatedCode;
             }
         }
@@ -66,7 +66,7 @@ public class CodeToString {
                 // Sometimes new files are given as a patch, othertimes as just files
                 string newFile;
                 if (diffValue.StartsWith("@@")) {
-                    newFile = PatchUtility.ApplyDiffs("", item.Value);
+                    newFile = PatchUtility.ApplyDiffs(item.Key, "", item.Value);
                 }
                 else {
                     newFile = diffValue;

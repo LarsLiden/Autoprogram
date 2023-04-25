@@ -2,6 +2,8 @@ appsettings.json
 */bin/*
 */obj/*
 */net7.0/*
+TempWorkingProject/*
+Output/*
 
 
 .fake

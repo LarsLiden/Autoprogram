@@ -28,25 +28,32 @@ public static class PatchUtility
             this.type = type;
         }
     }
-    public static string? ApplyDiffs(string originalCode, List<string> diffs)
+    public static string? ApplyDiffs(string fileName, string originalCode, List<string> diffs)
     {
         var patches = GetPatches(diffs);
-        var newCode = ApplyPatches(originalCode, patches);
+        var newCode = ApplyPatches(fileName, originalCode, patches);
         return newCode;
     }
 
-    private static string ApplyPatches(string originalCode, List<Patch> patches) {
+    private static string ApplyPatches(string fileName, string originalCode, List<Patch> patches) {
         var codeLines = originalCode.Split("\n").ToList();
         foreach (var patch in patches) {
-            codeLines = ApplyPatchToLines(codeLines, patch);
+            (codeLines, bool success) = ApplyPatchToLines(codeLines, patch);
+            if (!success) {
+                Utils.ColorfulWriteLine($"Failed to patch {fileName}", ConsoleColor.Red);
+                return originalCode;
+            }
         }
         var newCode = string.Join( "\n", codeLines);
         return newCode;
     }
 
-    public static List<string> ApplyPatchToLines(List<string>codeLines, Patch patch) {
+    public static (List<string>, bool) ApplyPatchToLines(List<string>codeLines, Patch patch) {
         var curFileLine = FindFirstLine(codeLines, patch);
 
+        if (curFileLine == -1) {
+            return  (null, false);
+        }
         for (int i = 0; i < patch.patchLines.Count(); i++)  {
             var curPatchLine = patch.patchLines[i];
             if (curPatchLine.type == PatchType.ADD) {
@@ -68,7 +75,7 @@ public static class PatchUtility
                 curFileLine++;
             }
         }
-        return codeLines;
+        return (codeLines, true);
     }
 
     private static int FindFirstLine(List<string> codeLines, Patch patch) {
