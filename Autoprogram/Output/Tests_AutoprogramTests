@@ -1,0 +1,63 @@
+Output:   Determining projects to restore...
+  All projects are up-to-date for restore.
+  Autoprogram -> C:\Users\laliden\AppData\Local\Temp\TempProject\Autoprogram\bin\Debug\net7.0\Autoprogram.dll
+  AutoprogramTests -> C:\Users\laliden\AppData\Local\Temp\TempProject\AutoprogramTests\bin\Debug\net7.0\AutoprogramTests.dll
+Test run for C:\Users\laliden\AppData\Local\Temp\TempProject\AutoprogramTests\bin\Debug\net7.0\AutoprogramTests.dll (.NETCoreApp,Version=v7.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.5.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed Autoprogram.Tests.HistoryUpdaterTests.UpdateHistoryFile_AppendsCorrectContent [19 ms]
+  Error Message:
+   Assert.Equal() Failure
+                                  Γåô (pos 59)
+Expected: ┬╖┬╖┬╖]\nThis is a comment.\n\n
+Actual:   ┬╖┬╖┬╖]\nThis is a comment.
+                                  Γåæ (pos 59)
+  Stack Trace:
+     at Autoprogram.Tests.HistoryUpdaterTests.UpdateHistoryFile_AppendsCorrectContent() in C:\Users\laliden\AppData\Local\Temp\TempProject\AutoprogramTests\HistoryUpdaterTests.cs:line 23
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)
+  Failed Autoprogram.Tests.UtilsTests.NextNonBlankIndex_ReturnsCorrectIndex [11 ms]
+  Error Message:
+   Assert.Equal() Failure
+Expected: 4
+Actual:   2
+  Stack Trace:
+     at Autoprogram.Tests.UtilsTests.NextNonBlankIndex_ReturnsCorrectIndex() in C:\Users\laliden\AppData\Local\Temp\TempProject\AutoprogramTests\UtilsTests.cs:line 45
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)
+  Failed Autoprogram.Tests.CodeToStringTests.StringToCode_ReturnsCorrectFiles [6 ms]
+  Error Message:
+   System.IndexOutOfRangeException : Index was outside the bounds of the array.
+  Stack Trace:
+     at StringToCode.GetFilesDiffs(String text) in C:\Users\laliden\AppData\Local\Temp\TempProject\Autoprogram\StringToCode.cs:line 13
+   at Autoprogram.Tests.CodeToStringTests.StringToCode_ReturnsCorrectFiles() in C:\Users\laliden\AppData\Local\Temp\TempProject\AutoprogramTests\CodeToStringTests.cs:line 54
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)
+  Failed Autoprogram.Tests.CodeToStringTests.StringToCode_ReturnsCorrectFiles_WithBlankLines [1 ms]
+  Error Message:
+   System.IndexOutOfRangeException : Index was outside the bounds of the array.
+  Stack Trace:
+     at StringToCode.GetFilesDiffs(String text) in C:\Users\laliden\AppData\Local\Temp\TempProject\Autoprogram\StringToCode.cs:line 13
+   at Autoprogram.Tests.CodeToStringTests.StringToCode_ReturnsCorrectFiles_WithBlankLines() in C:\Users\laliden\AppData\Local\Temp\TempProject\AutoprogramTests\CodeToStringTests.cs:line 77
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)
+  Failed Autoprogram.Tests.CodeToStringTests.ApplyPatchesToFiles_ReturnsCorrectUpdatedFiles [3 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at Autoprogram.Tests.CodeToStringTests.ApplyPatchesToFiles_ReturnsCorrectUpdatedFiles() in C:\Users\laliden\AppData\Local\Temp\TempProject\AutoprogramTests\CodeToStringTests.cs:line 116
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)
+
+Failed!  - Failed:     5, Passed:     4, Skipped:     0, Total:     9, Duration: 42 ms - AutoprogramTests.dll (net7.0)
+
+Error: [xUnit.net 00:00:04.60]     Autoprogram.Tests.HistoryUpdaterTests.UpdateHistoryFile_AppendsCorrectContent [FAIL]
+[xUnit.net 00:00:04.61]     Autoprogram.Tests.UtilsTests.NextNonBlankIndex_ReturnsCorrectIndex [FAIL]
+[xUnit.net 00:00:04.62]     Autoprogram.Tests.CodeToStringTests.StringToCode_ReturnsCorrectFiles [FAIL]
+[xUnit.net 00:00:04.62]     Autoprogram.Tests.CodeToStringTests.StringToCode_ReturnsCorrectFiles_WithBlankLines [FAIL]
+[xUnit.net 00:00:04.62]     Autoprogram.Tests.CodeToStringTests.ApplyPatchesToFiles_ReturnsCorrectUpdatedFiles [FAIL]

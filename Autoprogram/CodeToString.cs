@@ -1,4 +1,5 @@
 using System.Text;
+ using System.IO;
 
 public class CodeToString {
     private string ProjectDirectory { get; set; }  

@@ -6,6 +6,28 @@ namespace Autoprogram.Tests
     public class UtilsTests
     {
         [Fact]
+        public void CopyProjectToDestination_CopiesFilesCorrectly()
+        {
+             // Arrange
+            string projectDirectory = Path.GetTempPath() + "Tests\\UtilsTests";
+            Directory.CreateDirectory(projectDirectory);
+            string destinationFolder = Path.Combine(projectDirectory, "Destination");
+            Directory.CreateDirectory(destinationFolder);
+
+            string csFile = projectDirectory + "\\test.cs";
+            File.WriteAllText(csFile, "Console.WriteLine(\"Hello World\");");
+
+            // Act
+            Utils.CopyProjectToDestination(projectDirectory, destinationFolder);
+
+             // Assert
+            Assert.True(File.Exists(Path.Combine(destinationFolder, "test.cs")));
+
+             // Cleanup
+            Directory.Delete(projectDirectory, true);
+        }
+
+        [Fact]
         public void NextNonBlankIndex_ReturnsCorrectIndex()
         {
             // Arrange
@@ -15,7 +37,7 @@ namespace Autoprogram.Tests
             int index1 = Utils.NextNonBlankIndex(lines, 0);
             int index2 = Utils.NextNonBlankIndex(lines, 1);
             int index3 = Utils.NextNonBlankIndex(lines, 2);
-            int index4 = Utils.NextNonBlankIndex(lines, 4, true);
+            int index4 = Utils.NextNonBlankIndex(lines, 4);
 
             // Assert
             Assert.Equal(0, index1);
