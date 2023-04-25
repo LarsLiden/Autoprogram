@@ -28,7 +28,7 @@ namespace Autoprogram.Tests
 
             var codeToString = new CodeToString(TestDirectory);
 
-            // Act
+              // Act
             var result = codeToString.GetSourceFilesDictionary();
 
             // Assert
@@ -39,7 +39,7 @@ namespace Autoprogram.Tests
             // Cleanup
             Directory.Delete(TestDirectory, true);
         }
-
+        
         [Fact]
         public void StringToCode_ReturnsCorrectFiles()
         {
