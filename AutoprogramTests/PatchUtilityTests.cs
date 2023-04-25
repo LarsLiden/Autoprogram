@@ -10,28 +10,28 @@ namespace Autoprogram.Tests
         {
             // Arrange
             string originalCode = "public class HelloWorld {\n" +
-                                  "    public static void main(String[] args) {\n" +
-                                  "        System.out.println(\"Hello, world!\");\n" +
-                                  "    }\n" +
-                                  "}\n";
+                                "    public static void main(String[] args) {\n" +
+                                "        System.out.println(\"Hello, world!\");\n" +
+                                "    }\n" +
+                                "}\n";
 
             string unidiff = "@@ -1,5 +1,5 @@\n" +
                              "  public class HelloWorld {\n" +  // Tests extra spaces
-                             "     public static void main(String[] args) {\n" +
-                             "-        System.out.println(\"Hello, world!\");\n" +
-                             "+        System.out.println(\"Hello, Earth!\");\n" +
-                             "     }\n" +
-                             " }\n";
+                            "     public static void main(String[] args) {\n" +
+                            "-        System.out.println(\"Hello, world!\");\n" +
+                            "+        System.out.println(\"Hello, Earth!\");\n" +
+                            "     }\n" +
+                            " }\n";
 
             string expectedUpdatedCode = "public class HelloWorld {\n" +
-                                         "    public static void main(String[] args) {\n" +
-                                         "        System.out.println(\"Hello, Earth!\");\n" +
-                                         "    }\n" +
-                                         "}\n";
+                                        "    public static void main(String[] args) {\n" +
+                                        "        System.out.println(\"Hello, Earth!\");\n" +
+                                        "    }\n" +
+                                        "}\n";
 
             var diffs = new List<string> { unidiff };
             // Act
-            string updatedCode = PatchUtility.ApplyDiffs(originalCode, diffs);
+            string updatedCode = PatchUtility.ApplyDiffs("", originalCode, diffs);
 
             // Assert
             Assert.Equal(TestUtil.RemoveLF(expectedUpdatedCode), TestUtil.RemoveLF(updatedCode), ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
@@ -54,7 +54,7 @@ namespace Autoprogram.Tests
             var expectedCodeLines = new List<string> { "A", "B", "c", "d", "E", "f", "G" };
 
             // Act
-            var updatedCodeLines = PatchUtility.ApplyPatchToLines(codeLines, patch);
+            (var updatedCodeLines, var success) = PatchUtility.ApplyPatchToLines("", codeLines, patch);
 
             // Assert
             Assert.Equal(expectedCodeLines, updatedCodeLines);

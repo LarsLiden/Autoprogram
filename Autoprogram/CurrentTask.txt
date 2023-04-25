@@ -1,0 +1,1 @@
+Move "// Get current task" code into a separate function
