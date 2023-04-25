@@ -28,7 +28,7 @@ namespace Autoprogram.Tests
 
             var codeToString = new CodeToString(TestDirectory);
 
-            // Act
+              // Act
             var result = codeToString.GetSourceFilesDictionary();
 
             // Assert
@@ -40,6 +40,28 @@ namespace Autoprogram.Tests
             Directory.Delete(TestDirectory, true);
         }
 
+         [Fact]
+         public void CopyProjectToDestination_CopiesFilesCorrectly()
+         {
+             // Arrange
+             Directory.CreateDirectory(TestDirectory);
+             string destinationFolder = Path.Combine(TestDirectory, "Destination");
+             Directory.CreateDirectory(destinationFolder);
+ 
+             string csFile = TestDirectory   "\\test.cs";
+             File.WriteAllText(csFile, "Console.WriteLine(\"Hello World\");");
+ 
+             var codeToString = new CodeToString(TestDirectory);
+ 
+             // Act
+             codeToString.CopyProjectToDestination(destinationFolder);
+ 
+             // Assert
+             Assert.True(File.Exists(Path.Combine(destinationFolder, "test.cs")));
+ 
+             // Cleanup
+             Directory.Delete(TestDirectory, true);
+         }
         [Fact]
         public void StringToCode_ReturnsCorrectFiles()
         {

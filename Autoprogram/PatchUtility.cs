@@ -109,6 +109,19 @@ public static class PatchUtility
         return preLines;
     }
 
+    private static bool IsKeepLine(string text) {
+        if (text.StartsWith("\\")) { 
+            return false;
+        }
+        if (text.StartsWith("+++")) {
+            return false;
+        }
+        if (text.StartsWith("---")) {
+            return false;
+        }
+        return true;
+    }
+
     private static List<Patch> GetPatches(List<string> diffs) {
         var patches = new List<Patch>();
 
@@ -136,7 +149,7 @@ public static class PatchUtility
                             patchLine = new PatchLine(currentContent, PatchType.DELETE);
                         }
                         // If not a comment keep
-                        else if (!currentContent.StartsWith("\\")) {
+                        else if (IsKeepLine(currentContent)) {
                             patchLine = new PatchLine(currentContent, PatchType.KEEP);
                         }
                         if (patchLine != null) {
