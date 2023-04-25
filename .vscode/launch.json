@@ -10,11 +10,11 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/AutoprogramTests/bin/Debug/net7.0/AutoprogramTests.dll",
+            "program": "${workspaceFolder}/Autoprogram/bin/Debug/net7.0/Autoprogram.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/AutoprogramTests",
+            "cwd": "${workspaceFolder}/Autoprogram",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
-            "console": "internalConsole",
+            "console": "integratedTerminal",
             "stopAtEntry": false
         },
         {

@@ -5,6 +5,8 @@ namespace Autoprogram
 {
     internal class Program
     {
+        private static string rootProjectDirectory;
+
         static async Task Main(string[] args)
         {
             var builder = new ConfigurationBuilder()
@@ -16,12 +18,12 @@ namespace Autoprogram
             var client = new Responder(configuration, "GrindstoneGPT4-32k");
 
             // Get current project directory
-            var projectDirectory = Directory.GetCurrentDirectory();
-            projectDirectory = System.IO.Directory.GetParent(projectDirectory).FullName;
+            rootProjectDirectory = Directory.GetCurrentDirectory();
+            rootProjectDirectory = System.IO.Directory.GetParent(rootProjectDirectory).FullName;
 
             // Make a copy
-            string tempProjectDirectory = Path.Combine(Path.GetTempPath(), "TempProject");
-            Utils.CopyProjectToDestination(projectDirectory, tempProjectDirectory);
+            string tempProjectDirectory = Path.Combine(rootProjectDirectory, "TempWorkingProject");
+            Utils.CopyProjectToDestination(rootProjectDirectory, tempProjectDirectory);
 
             // Extract code
             var codeToString = new CodeToString(tempProjectDirectory);
@@ -37,11 +39,13 @@ namespace Autoprogram
             }  
             
             if (curTask != "") {
+                Utils.ColorfulWriteLine($"Current Task:", ConsoleColor.Cyan);
+                Utils.ColorfulWriteLine(curTask, ConsoleColor.Blue);
+
                 var prompt = $"{curTask}\n{source}";
                 var response = await client.GetResponse(prompt);
-                Console.WriteLine($"Current Task:\n{curTask}\n\n[COMMENT]:\n{HistoryUpdater.ExtractCommentSection(response)}");
-
-                Console.WriteLine($"Changed:\n{response}");
+                
+                Utils.ColorfulWriteLine($"Changed:", ConsoleColor.Cyan);
 
                 if (!Utils.UserWantsToContinue("Looks good?")) {
                     return;
@@ -71,11 +75,11 @@ namespace Autoprogram
 
             // First backup
             string backupProjectDirectory = Path.Combine(Path.GetTempPath(), "TempBackup");
-            Utils.CopyProjectToDestination(projectDirectory, backupProjectDirectory);
+            Utils.CopyProjectToDestination(rootProjectDirectory, backupProjectDirectory);
             Utils.ColorfulWriteLine($"Original code backed up to {backupProjectDirectory}.", ConsoleColor.Blue);
 
             // Now copy over new code
-            Utils.CopyProjectToDestination(tempProjectDirectory, projectDirectory);
+            Utils.CopyProjectToDestination(tempProjectDirectory, rootProjectDirectory);
             Utils.ColorfulWriteLine("Changes saved.", ConsoleColor.Blue);
 /*
             // Initialize CommandLineUtilities with your Github token and create a pull request
@@ -117,7 +121,7 @@ namespace Autoprogram
             }
             else
             {
-                var fileName = $"Output//Tests_{project}";
+                var fileName = $"{rootProjectDirectory}//Output//Tests_{project}";
                 Utils.ColorfulWriteLine($"Some unit test failed.  See {fileName}", ConsoleColor.Red);
                 var text = $"Output: {output}\nError: {error}";
                 Utils.CreateFileWithText(fileName, text);
@@ -151,7 +155,7 @@ namespace Autoprogram
             }
             else
             {
-                var fileName = $"Output//Compile_{project}";
+                var fileName = $"{rootProjectDirectory}//Output//Compile_{project}";
                 Utils.ColorfulWriteLine($"{project} compilation failed {projectDirectory}.  See {fileName}", ConsoleColor.Red);
                 var text = $"Output: {output}\nError: {error}";
                 Utils.CreateFileWithText(fileName, text);

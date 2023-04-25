@@ -21,7 +21,7 @@ class Utils {
         {
             currentIndex++;
             if (currentIndex == lines.Length) {
-                return -1;
+                return currentIndex;
             }
         }
         return currentIndex;
