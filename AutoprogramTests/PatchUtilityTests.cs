@@ -17,11 +17,11 @@ namespace Autoprogram.Tests
 
             string unidiff = "@@ -1,5 +1,5 @@\n" +
                              "  public class HelloWorld {\n" +  // Tests extra spaces
-                             "     public static void main(String[] args) {\n" +
-                             "-        System.out.println(\"Hello, world!\");\n" +
-                             "+        System.out.println(\"Hello, Earth!\");\n" +
-                             "     }\n" +
-                             " }\n";
+                            "     public static void main(String[] args) {\n" +
+                            "-        System.out.println(\"Hello, world!\");\n" +
+                            "+        System.out.println(\"Hello, Earth!\");\n" +
+                            "     }\n" +
+                            " }\n";
 
             string expectedUpdatedCode = "public class HelloWorld {\n" +
                                         "    public static void main(String[] args) {\n" +

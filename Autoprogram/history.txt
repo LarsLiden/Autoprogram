@@ -61,4 +61,7 @@ Failed Autoprogram.Tests.CodeToStringTests.StringToCode_ReturnsCorrectFiles [7 m
    at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)
   Failed Autoprogram.Tests.UtilsTests.NextNonBlankIndex_ReturnsCorrectIndex [9 ms]
 [COMMENT]
-I have fixed the unit test Autoprogram.Tests.CodeToStringTests.StringToCode_ReturnsCorrectFiles by updating the test code. The test should now pass without any issues. No changes were made to the main codebase.
+I have fixed the unit test Autoprogram.Tests.CodeToStringTests.StringToCode_ReturnsCorrectFiles by updating the test code. The test should now pass without any issues. No changes were made to the main codebase.[TASK]
+Move "// Get current task" code into a separate function
+[COMMENT]
+I have moved the "// Get current task" code into a separate function called GetCurrentTask() in the Program.cs file. I also added a unit test for this new function in the ProgramTests.cs file.
