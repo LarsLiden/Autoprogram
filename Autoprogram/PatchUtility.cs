@@ -1,4 +1,5 @@
-using DiffMatchPatch;
+using DiffPlex.DiffBuilder;
+using DiffPlex.DiffBuilder.Model;
 
 // Can't apply conventional libraries for UniDiff patching because returned values from GPT is fuzzy.  Need to 
 // use a more robust algorithm that can handle mistakes
@@ -10,7 +11,7 @@ public static class PatchUtility
         DELETE,
         KEEP
     }
-    
+
     public class Patch {
         public List<PatchLine> patchLines = new List<PatchLine>();
 
@@ -28,165 +29,145 @@ public static class PatchUtility
             this.type = type;
         }
     }
-    public static string? ApplyDiffs(string fileName, string originalCode, List<string> diffs)
-    {
-        var patches = GetPatches(diffs);
-        var newCode = ApplyPatches(fileName, originalCode, patches);
-        return newCode;
+
+    public static int FindFirstString(List<string> lines, string search)  
+    {  
+        for (int i = 0; i < lines.Count; i++)  
+        {  
+            if (lines[i].Contains(search, StringComparison.CurrentCultureIgnoreCase))  
+            {  
+                return i;  
+            }  
+        }  
+    
+        return -1; // Return -1 if no match was found  
     }
 
-    private static string ApplyPatches(string fileName, string originalCode, List<Patch> patches) {
-        var codeLines = originalCode.Split("\n").ToList();
-        foreach (var patch in patches) {
-            (codeLines, bool success) = ApplyPatchToLines(fileName, codeLines, patch);
-            if (!success) {
-                Utils.ColorfulWriteLine($"Failed to patch {fileName}", ConsoleColor.Red);
-                return originalCode;
-            }
-        }
-        var newCode = string.Join( "\n", codeLines);
-        return newCode;
-    }
+    public static List<string> GetPrecedingItems(List<string> list, int index, int numProceeding)  
+    {  
+        int startIndex = Math.Max(index - 1 - numProceeding, 0);  
+        int count = index - startIndex;  
+    
+        return list.GetRange(startIndex, count);  
+    }  
 
-    public static (List<string>, bool) ApplyPatchToLines(string fileName, List<string>codeLines, Patch patch) {
-        var curFileLine = FindFirstLine(codeLines, patch);
+    public static int FindSubListEnd(List<string> subList, List<string> list)  
+    {  
+        int smallLength = subList.Count;  
+        int largeLength = list.Count;  
 
-        if (curFileLine == -1) {
-            return  (null, false);
-        }
-        for (int i = 0; i < patch.patchLines.Count(); i++)  {
-            var curPatchLine = patch.patchLines[i];
-            if (curPatchLine.type == PatchType.ADD) {
-                if (curFileLine < codeLines.Count()) {
-                    codeLines.Insert(curFileLine, curPatchLine.text);
-                }
-                else {
-                    codeLines.Add(curPatchLine.text);
-                }
-                curFileLine++;
-            }
-            else if (curPatchLine.type == PatchType.DELETE) {
-                if (curPatchLine.text.Trim() != codeLines[curFileLine].Trim()) {
-                    Utils.ColorfulWriteLine($"Line Mismatch {fileName}", ConsoleColor.Red);
-                    return  (null, false);
-                }
-                codeLines.RemoveAt(curFileLine);
-            }
-            else if (curPatchLine.type == PatchType.KEEP) {
-                curFileLine++;
-            }
-        }
-        return (codeLines, true);
-    }
-
-    private static int FindFirstLine(List<string> codeLines, Patch patch) {
-        var preLines = GetPreLines(patch);
-
-        for (int i = 0; i <= codeLines.Count() - preLines.Count(); i++)  
+        for (int i = 0; i < largeLength - smallLength + 1; i++)  
         {  
             bool match = true;  
-            for (int j = 0; j < preLines.Count(); j++)  
+
+            for (int j = 0; j < smallLength; j++)  
             {  
-                if (codeLines[i + j].Trim() != preLines[j].Trim())  
+                if (list[i + j] != subList[j])  
                 {  
                     match = false;  
                     break;  
                 }  
             }  
+
             if (match)  
             {  
-                return i;  
+                return i + smallLength;  
             }  
         }  
-        return -1;  
+
+        return -1; // Return -1 if no match was found  
+    } 
+
+    public static List<string> TruncateList(List<string> list, int index)  
+    {  
+        if (index < 0)  
+        {  
+            return new List<string>();  
+        }  
+    
+        int count = Math.Min(index + 1, list.Count);  
+        return list.GetRange(0, count);  
+    }  
+
+    public static int FindRemainingCode(List<string> updatedLines, List<string> originalLines, int restIndex) {
+        var curTestIndex = restIndex;
+        while (curTestIndex > 5) {
+            var precedingItems = GetPrecedingItems(updatedLines, curTestIndex, 5);
+            var subListEnd = FindSubListEnd(precedingItems, originalLines);
+            if (subListEnd > 0) {
+                return subListEnd;
+            }
+            curTestIndex--;
+        }
+        return -1;
     }
 
-    // Get list of unedit lines before the first edit
-    private static List<string> GetPreLines(Patch patch) {
-        var index = 0;
-        var preLines = new List<string>();
-        while (index < patch.patchLines.Count) {
-            if (patch.patchLines[index].type == PatchType.KEEP) {
-                preLines.Add(patch.patchLines[index].text);
+    private static string PatchUpdatedCode(string originalFile, string updatedFile) {
+
+        if (updatedFile.Contains("rest of the code",StringComparison.CurrentCultureIgnoreCase)) {
+            var originalLines = originalFile.Split("\n").ToList();
+            var updatedLines = updatedFile.Split("\n").ToList();
+
+            var restIndex = FindFirstString(updatedLines, "rest of the code");
+
+            var patchPosition = FindRemainingCode(updatedLines, originalLines, restIndex);
+            var patchLines = originalLines.GetRange(patchPosition, originalLines.Count-patchPosition);
+    
+            updatedLines = TruncateList(updatedLines, restIndex-1);
+            updatedLines.AddRange(patchLines);
+            var updatedList = string.Join("\n", updatedLines);
+            return updatedList;
+        }
+        return updatedFile;
+    }
+ 
+    private static string GetDiff(string originalFile, string updatedFile) {
+        var diff = InlineDiffBuilder.Diff(originalFile, updatedFile);
+
+        var savedColor = Console.ForegroundColor;
+        foreach (var line in diff.Lines)
+        {
+            switch (line.Type)
+            {
+                case ChangeType.Inserted:
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write("+ ");
+                    break;
+                case ChangeType.Deleted:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write("- ");
+                    break;
+                default:
+                    Console.ForegroundColor = ConsoleColor.Gray; // compromise for dark or light background
+                    Console.Write("  ");
+                    break;
+            }
+
+            Console.WriteLine(line.Text);
+        }
+        Console.ForegroundColor = savedColor;
+        return "yes";
+    }
+
+    public static Dictionary<string, string> GetDiffDict(Dictionary<string, string> originalFilesDict, Dictionary<string, string> updatedFilesDict) {
+        var diffDict = new Dictionary<string,string>();
+        foreach (var item in updatedFilesDict) {
+            if (originalFilesDict.TryGetValue(item.Key, out string? existingFileContent)) {
+                var updatedFileContent = PatchUpdatedCode(existingFileContent, item.Value);
+                var diff = GetDiff(existingFileContent, updatedFileContent);
+                diffDict.Add(item.Key, diff);
             }
             else {
-                return preLines;
-            }
-            index++;
-        }
-        return preLines;
-    }
-
-    private static bool IsKeepLine(string text) {
-        if (text.StartsWith("\\")) { 
-            return false;
-        }
-        if (text.StartsWith("+++")) {
-            return false;
-        }
-        if (text.StartsWith("---")) {
-            return false;
-        }
-        return true;
-    }
-
-    private static List<Patch> GetPatches(List<string> diffs) {
-        var patches = new List<Patch>();
-
-        foreach (var diff in diffs) {
-            var lines = diff.Split('\n');  
-            var index = 0;
-
-            while (index < lines.Length)
-            {
-                if (lines[index].StartsWith("@@"))
-                {
-                    index = Utils.NextNonBlankIndex(lines, index+1);
-                    var patch = new Patch();
-
-                    while (index < lines.Length && !lines[index].StartsWith("@@"))
-                    {
-                        var currentContent = lines[index];
-                        PatchLine? patchLine = null;
-                        if (currentContent.StartsWith("+")) {
-                            currentContent = currentContent.Replace("+", " ");
-                            patchLine = new PatchLine(currentContent, PatchType.ADD);
-                        }
-                        else if (currentContent.StartsWith("-")) {
-                            currentContent = currentContent.Replace("-", " ");
-                            patchLine = new PatchLine(currentContent, PatchType.DELETE);
-                        }
-                        // If not a comment keep
-                        else if (IsKeepLine(currentContent)) {
-                            patchLine = new PatchLine(currentContent, PatchType.KEEP);
-                        }
-                        if (patchLine != null) {
-                            patch.Add(patchLine);
-                        }
-                        index++;
-                    }
-                    patches.Add(patch);
-                }
-                if (index < lines.Length && !lines[index].StartsWith("@@")) {
-                    index++;
-                }
+                // It's a new file
+                diffDict.Add(item.Key, item.Value);
             }
         }
-        return patches;
+        return diffDict;
     }
 
-    public static string Filter(string input) {
-        string[] lines = input.Split('\n');  
-        List<string> linesToKeep = new List<string>();  
-        
-        foreach (string line in lines)  
-        {  
-            if (line.StartsWith("@") || line.StartsWith("+") || line.StartsWith("-"))  
-            {  
-                linesToKeep.Add(Utils.CleanString(line));  
-            }  
-        }  
-        
-        return string.Join('\n', linesToKeep);  
+    public static string ChangeString(Dictionary<string, string> originalFilesDict, Dictionary<string, string> updatedFilesDict) {
+        var diffDict = GetDiffDict(originalFilesDict, updatedFilesDict);
+        var text = Utils.CodeDictionaryToString(diffDict);
+        return text;
     }
 }

@@ -28,7 +28,7 @@ namespace Autoprogram
             // Extract code
             var codeToString = new CodeToString(tempProjectDirectory);
             var sourceFilesDictionary = codeToString.GetSourceFilesDictionary();
-            var source = codeToString.DictionaryToString(sourceFilesDictionary);
+            var source = Utils.CodeDictionaryToString(sourceFilesDictionary);
 
             // Get current task
             var path = Directory.GetCurrentDirectory()+@"\\CurrentTask.txt";
@@ -51,6 +51,12 @@ namespace Autoprogram
                 if (!Utils.UserWantsToContinue("Looks good?")) {
                     return;
                 }
+
+                var updatedFileDictionary = StringToCode.GetFileDictionary(response);
+                var changes = PatchUtility.ChangeString(sourceFilesDictionary, updatedFileDictionary);
+                
+                
+/*
                 var fileDiffDict = StringToCode.GetFilesDiffs(response);
                 var files = codeToString.ApplyDiffsToFiles(sourceFilesDictionary, fileDiffDict);
 
@@ -60,7 +66,7 @@ namespace Autoprogram
                     return;
                 }
                 StringToCode.SaveFilesToDisk(files);
-
+*/
                 // Update the history file
                 HistoryUpdater.UpdateHistoryFile("history.txt", curTask, response);
             }
