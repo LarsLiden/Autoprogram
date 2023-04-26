@@ -36,12 +36,33 @@ public class CodeToString {
         var sourceFilesWithPathAndCode = new StringBuilder();
         foreach (var file in sourceFilesDictionary)
         {
+            var withLineNumbers = AddLineNumbers(file.Value);
             sourceFilesWithPathAndCode.AppendLine($"[File]\n{file.Key}");
-            sourceFilesWithPathAndCode.AppendLine($"[Code]\n{file.Value}");
+            sourceFilesWithPathAndCode.AppendLine($"[Code]\n{withLineNumbers}");
             sourceFilesWithPathAndCode.AppendLine();
         }
         return sourceFilesWithPathAndCode.ToString();
     }
+
+    public static string AddLineNumbers(string input)  
+    {  
+        StringBuilder output = new StringBuilder();  
+        int lineNumber = 1;  
+
+        using (StringReader reader = new StringReader(input))  
+        {  
+            string line;  
+            while ((line = reader.ReadLine()) != null)  
+            {  
+                output.Append(lineNumber.ToString().PadLeft(4, ' '));  
+                output.Append(": ");  
+                output.AppendLine(line);  
+                lineNumber++;  
+            }  
+        }  
+
+        return output.ToString();  
+    }  
 
     public Dictionary<string, string> ApplyDiffsToFiles(Dictionary<string, string> originalFiles, Dictionary<string, List<string>> fileDiffDict)
     {
