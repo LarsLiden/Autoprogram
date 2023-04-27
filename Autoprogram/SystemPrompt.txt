@@ -7,6 +7,6 @@ First include a "[COMMENT]" section in which you describe your changes.  Then fo
 {the path to the file}
 
 [START CODE]
-{updated code}
+{show entire file contents}
 [END CODE]
 

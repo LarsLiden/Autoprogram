@@ -53,20 +53,18 @@ namespace Autoprogram
                 }
 
                 var updatedFileDictionary = StringToCode.GetFileDictionary(response);
-                var changes = PatchUtility.ChangeString(sourceFilesDictionary, updatedFileDictionary);
-                
-                
-/*
-                var fileDiffDict = StringToCode.GetFilesDiffs(response);
-                var files = codeToString.ApplyDiffsToFiles(sourceFilesDictionary, fileDiffDict);
 
-                if (files.Count() == 0) {
+                SaveSampleFiles(rootProjectDirectory, sourceFilesDictionary, updatedFileDictionary);
+
+                var changes = PatchUtility.ApplyChanges(sourceFilesDictionary, updatedFileDictionary);
+                
+                if (changes.Count() == 0) {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("No files to updated.");
                     return;
                 }
-                StringToCode.SaveFilesToDisk(files);
-*/
+                StringToCode.SaveFilesToDisk(changes);
+
                 // Update the history file
                 HistoryUpdater.UpdateHistoryFile("history.txt", curTask, response);
             }
@@ -75,7 +73,7 @@ namespace Autoprogram
             CompileProject(tempProjectDirectory, "AutoprogramTests");
             ExecuteNUnitTests(tempProjectDirectory, "AutoprogramTests");
 
-            if (!Utils.UserWantsToContinue("Keep Changes?")) {
+            if (!Utils.UserWantsToContinue("Replace tiles?")) {
                 Utils.ColorfulWriteLine("Changes abandoned.", ConsoleColor.Blue);
                 return;
             }
@@ -102,6 +100,21 @@ namespace Autoprogram
 */
         }
 
+        private static void SaveSampleFiles(string projectDirectory, Dictionary<string, string> originalFilesDict, Dictionary<string, string> updatedFilesDict) {
+            var path = $"{rootProjectDirectory}//Output//TestData//";
+    
+            foreach (var item in updatedFilesDict) {
+                var lastIndex = item.Key.LastIndexOf("\\");
+                string filePath = item.Key.Substring(lastIndex+1);
+                var fileName = $"{path}{filePath}_UPDATED";
+                Utils.CreateFileWithText(fileName, item.Value);
+                if (originalFilesDict.TryGetValue(item.Key, out string? existingFileContent)) {
+                    fileName = $"{path}{filePath}_ORIGINAL";
+                    Utils.CreateFileWithText(fileName, existingFileContent);
+                }
+            }
+        }
+        
         private static void ExecuteNUnitTests(string projectDirectory, string project)
         {
             var process = new Process

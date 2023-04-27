@@ -30,7 +30,7 @@ public static class PatchUtility
         }
     }
 
-    public static int FindFirstString(List<string> lines, string search)  
+    public static int IndexOfFirstMatchingString(List<string> lines, string search)  
     {  
         for (int i = 0; i < lines.Count; i++)  
         {  
@@ -47,7 +47,7 @@ public static class PatchUtility
     {  
         int startIndex = Math.Max(index - 1 - numProceeding, 0);  
         int count = index - startIndex;  
-    
+
         return list.GetRange(startIndex, count);  
     }  
 
@@ -108,7 +108,7 @@ public static class PatchUtility
             var originalLines = originalFile.Split("\n").ToList();
             var updatedLines = updatedFile.Split("\n").ToList();
 
-            var restIndex = FindFirstString(updatedLines, "rest of the code");
+            var restIndex = IndexOfFirstMatchingString(updatedLines, "rest of the code");
 
             var patchPosition = FindRemainingCode(updatedLines, originalLines, restIndex);
             var patchLines = originalLines.GetRange(patchPosition, originalLines.Count-patchPosition);
@@ -121,8 +121,11 @@ public static class PatchUtility
         return updatedFile;
     }
  
-    private static string GetDiff(string originalFile, string updatedFile) {
+    private static string? ApplyChange(string fileName, string originalFile, string updatedFile) {
         var diff = InlineDiffBuilder.Diff(originalFile, updatedFile);
+
+        Utils.ColorfulWriteLine(fileName, ConsoleColor.Blue);
+        Utils.ColorfulWriteLine("---------------", ConsoleColor.Blue);
 
         var savedColor = Console.ForegroundColor;
         foreach (var line in diff.Lines)
@@ -146,15 +149,21 @@ public static class PatchUtility
             Console.WriteLine(line.Text);
         }
         Console.ForegroundColor = savedColor;
-        return "yes";
+
+        if (!Utils.UserWantsToContinue("Keep Changes?")) {
+            return null;
+        }
+        return updatedFile;
     }
 
-    public static Dictionary<string, string> GetDiffDict(Dictionary<string, string> originalFilesDict, Dictionary<string, string> updatedFilesDict) {
+    public static Dictionary<string, string> ApplyChanges(Dictionary<string, string> originalFilesDict, Dictionary<string, string> updatedFilesDict) {
         var diffDict = new Dictionary<string,string>();
         foreach (var item in updatedFilesDict) {
             if (originalFilesDict.TryGetValue(item.Key, out string? existingFileContent)) {
                 var updatedFileContent = PatchUpdatedCode(existingFileContent, item.Value);
-                var diff = GetDiff(existingFileContent, updatedFileContent);
+
+
+                var diff = ApplyChange(item.Key, existingFileContent, updatedFileContent);
                 diffDict.Add(item.Key, diff);
             }
             else {
@@ -163,11 +172,5 @@ public static class PatchUtility
             }
         }
         return diffDict;
-    }
-
-    public static string ChangeString(Dictionary<string, string> originalFilesDict, Dictionary<string, string> updatedFilesDict) {
-        var diffDict = GetDiffDict(originalFilesDict, updatedFilesDict);
-        var text = Utils.CodeDictionaryToString(diffDict);
-        return text;
     }
 }
