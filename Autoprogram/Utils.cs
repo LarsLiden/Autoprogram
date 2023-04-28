@@ -170,4 +170,13 @@ class Utils {
         var response = Console.ReadLine().ToUpper();  
         return (string.Equals(response, "Y"));
     }
+
+    public static string ReadFile(string path) {
+        string? fileContents;
+        using (StreamReader reader = new StreamReader(path))  
+        {  
+            fileContents = reader.ReadToEnd(); 
+        }
+        return fileContents;
+    }
 }

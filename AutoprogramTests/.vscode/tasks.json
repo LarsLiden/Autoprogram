@@ -1,9 +1,16 @@
 {
     "version": "2.0.0",
     "tasks": [
+        {  
+            "label": "CopyFiles",  
+            "type": "shell",  
+            "command": "cp ${workspaceFolder}/TestData/* ${workspaceFolder}/bin/Debug/net7.0",  
+            "problemMatcher": []  
+        },
         {
             "label": "build",
             "command": "dotnet",
+            "dependsOn": "CopyFiles",
             "type": "process",
             "args": [
                 "build",
@@ -12,6 +19,6 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
-        }
+        } 
     ]
 }

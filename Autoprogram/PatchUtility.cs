@@ -89,11 +89,37 @@ public static class PatchUtility
         return list.GetRange(0, count);  
     }  
 
-    public static int FindRemainingCode(List<string> updatedLines, List<string> originalLines, int restIndex) {
+    // Returns originalLines removing any lines that aren't in updatedLines
+    public static List<string> RemoveMissingLines(List<string> originalLines, List<string> updatedLines) {
+        var originalIndex = 0;
+        var updatedIndex = 0;
+        var remainingLines = new List<string>();
+        while (originalIndex < originalLines.Count) {
+            var updatedCheckpoint = updatedIndex;
+            while (updatedIndex < updatedLines.Count && originalLines[originalIndex] != updatedLines[updatedIndex]) {
+                updatedIndex++;
+            }
+            // Hit the end with no match so line must have been removed from original
+            if (updatedIndex == updatedLines.Count ) {
+                originalIndex++;
+                updatedIndex = updatedCheckpoint;
+            }
+            else {
+                remainingLines.Add(originalLines[originalIndex]);
+                originalIndex++;
+                updatedIndex++;
+            }
+        }
+        return remainingLines;
+    }
+
+    public static int FindRemainingCode(List<string> originalLines, List<string> updatedLines, int restIndex) {
+
+        var remainingLines = RemoveMissingLines(originalLines, updatedLines);
         var curTestIndex = restIndex;
         while (curTestIndex > 5) {
             var precedingItems = GetPrecedingItems(updatedLines, curTestIndex, 5);
-            var subListEnd = FindSubListEnd(precedingItems, originalLines);
+            var subListEnd = FindSubListEnd(precedingItems, remainingLines);
             if (subListEnd > 0) {
                 return subListEnd;
             }
@@ -110,7 +136,7 @@ public static class PatchUtility
 
             var restIndex = IndexOfFirstMatchingString(updatedLines, "rest of the code");
 
-            var patchPosition = FindRemainingCode(updatedLines, originalLines, restIndex);
+            var patchPosition = FindRemainingCode(originalLines, updatedLines, restIndex);
             var patchLines = originalLines.GetRange(patchPosition, originalLines.Count-patchPosition);
     
             updatedLines = TruncateList(updatedLines, restIndex-1);
